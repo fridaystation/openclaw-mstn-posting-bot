@@ -12,6 +12,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["skills/**/*.ts"],
+  "include": ["moneystation/scripts/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
