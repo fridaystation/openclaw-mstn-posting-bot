@@ -46,6 +46,11 @@ URL 패턴:
 | **RC** | `https://dev2.moneystation.kr` | `https://api-dev.moneystation.kr` | `--env rc` (기본) |
 | **Live** | `https://www.moneystation.net` | `https://api.moneystation.net` | `--env live` |
 
+## 인증 (필수)
+
+모든 커맨드는 `--email`과 `--password`가 필요하다. 로그인 정보가 없으면 **사용자에게 먼저 물어본 뒤** 커맨드를 실행한다.
+이미 로그인한 세션이 있으면 자동 재사용되므로 매번 묻지 않아도 된다 (TTL: 3시간).
+
 ## Commands
 
 모든 커맨드는 `npx tsx {baseDir}/scripts/cli.ts <command> [options]`로 실행. 결과는 JSON stdout.
@@ -221,12 +226,14 @@ npx tsx {baseDir}/scripts/cli.ts read-feed --email user@example.com --password p
 
 1. URL에서 postId 추출: 116590
 2. URL 도메인으로 env 판별: www.moneystation.net → live
-3. npx tsx {baseDir}/scripts/cli.ts read-post --post-id 116590 --env live → 게시글 상세 조회
-4. 에이전트가 게시글 내용을 읽고 맥락에 맞는 댓글 생성 (LLM)
-5. npx tsx {baseDir}/scripts/cli.ts comment --post-id 116590 --body "..." --env live
+3. 로그인 정보(email/password)가 없으면 사용자에게 물어본다
+4. npx tsx {baseDir}/scripts/cli.ts read-post --post-id 116590 --email <email> --password <pw> --env live → 게시글 상세 조회
+5. 에이전트가 게시글 내용을 읽고 맥락에 맞는 댓글 생성 (LLM)
+6. npx tsx {baseDir}/scripts/cli.ts comment --post-id 116590 --email <email> --password <pw> --body "..." --env live
 ```
 
 > **주의**: 머니스테이션 URL을 WebFetch/웹스크래핑으로 직접 읽으면 안 된다. 반드시 `read-post` API를 사용한다.
+> **주의**: 로그인 정보 없이는 게시글 조회가 불가하다. 정보가 없으면 반드시 사용자에게 먼저 물어본다.
 
 ## 에러 대응
 
