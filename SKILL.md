@@ -1,6 +1,6 @@
 ---
 name: openclaw-mstn-posting-bot
-description: "MUST use for any request containing moneystation.net or dev2.moneystation.kr URLs, or any mention of 머니스테이션/MoneyStation. 머니스테이션 증권 SNS 자동화: 게시글 조회(read-post), 포스팅, 댓글, 피드 조회. 머니스테이션은 JS렌더링 사이트라 WebFetch 불가 — 반드시 이 스킬의 read-post API로 본문을 조회해야 한다."
+description: "MUST use for any request containing moneystation.net or dev2.moneystation.kr URLs, or any mention of 머니스테이션/MoneyStation. Also use when t.me or 텔레그램/Telegram channel URLs are mentioned as data sources for 머니스테이션 posting. 머니스테이션 증권 SNS 자동화: 게시글 조회(read-post), 포스팅, 댓글, 피드 조회. 머니스테이션은 JS렌더링 사이트라 WebFetch 불가 — 반드시 이 스킬의 read-post API로 본문을 조회해야 한다. 텔레그램 채널은 t.me/s/ URL로 변환하여 WebFetch로 조회."
 metadata: {"openclaw":{"requires":{"bins":["npx","node"]}}}
 ---
 
@@ -8,6 +8,12 @@ metadata: {"openclaw":{"requires":{"bins":["npx","node"]}}}
 
 머니스테이션(증권정보 SNS)에서 로그인, 포스팅, 댓글, 피드 조회를 자동화하는 스킬.
 포스팅/댓글은 금융·경제·투자 관련 주제 위주로 작성하며, 이와 무관한 내용은 작성하지 않는다.
+
+**콘텐츠 톤 (필수):** 증권 플랫폼에 맞는 전문적인 문체를 사용한다.
+- 이모지 사용 금지. 절대로 이모지를 넣지 않는다.
+- 간결하고 건조한 투자 분석 톤. 감탄사/과장 표현 자제.
+- 좋은 예: "수급 흐름이 양호하고, 실적 컨센서스 상회 시 추가 상승 여력이 있다고 봅니다."
+- 나쁜 예: "🚀 대박 종목! 꼭 잡으세요!! 💰🔥"
 
 ## 설계 원칙
 
@@ -190,7 +196,7 @@ npx tsx {baseDir}/scripts/cli.ts read-feed --email user@example.com --password p
 
 ## 워크플로우
 
-### 소스 기반 포스팅
+### 소스 기반 포스팅 (웹)
 
 ```
 사용자: "네이버 증권 뉴스에서 적당한 주제 잡아서 포스팅해줘"
@@ -200,6 +206,30 @@ npx tsx {baseDir}/scripts/cli.ts read-feed --email user@example.com --password p
 4. 에이전트가 관련 종목/토픽 태그 결정
 5. npx tsx {baseDir}/scripts/cli.ts post --content "..." --tags '[...]' --source '{"url":"..."}'
 ```
+
+### 소스 기반 포스팅 (텔레그램)
+
+텔레그램 채널을 데이터 소스로 사용하는 경우:
+
+**텔레그램 URL 처리:**
+- `https://t.me/siglab` → 네이티브 앱 리다이렉트 페이지 (본문 없음)
+- `https://t.me/s/siglab` → 웹에서 채팅 내용 열람 가능 (**이 URL을 사용**)
+- 채널 ID `@siglab` → `https://t.me/s/siglab`으로 변환
+
+```
+사용자: "@siglab 텔레그램 채널에서 적당한 내용 포스팅해줘"
+
+1. 채널 URL 생성: https://t.me/s/siglab
+2. WebFetch로 채널 페이지 조회 (t.me/s/ URL은 서버 렌더링이라 WebFetch 가능)
+3. 페이지 하단(최신순)에서 최근 5개 메시지를 추출
+4. 5개 중 증권/투자/금융 플랫폼에 적합한 콘텐츠를 선별
+5. 선별한 메시지를 기반으로 머니스테이션용 포스팅 작성 (LLM) — 단순 복사가 아닌, 분석/요약/의견 추가
+6. 에이전트가 관련 종목/토픽 태그 결정
+7. npx tsx {baseDir}/scripts/cli.ts post --content "..." --tags '[...]' --source '{"url":"https://t.me/siglab/메시지번호"}'
+```
+
+> **주의**: `t.me/채널` URL이 주어지면 반드시 `t.me/s/채널`로 변환하여 조회한다. `/s/` 없는 URL은 본문을 읽을 수 없다.
+> **주의**: 텔레그램 페이지는 최신 메시지가 하단에 위치한다. 하단부터 최근 5개를 읽는다.
 
 ### 댓글 작성 (피드 탐색)
 
