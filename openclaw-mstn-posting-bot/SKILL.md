@@ -99,6 +99,40 @@ npx tsx {baseDir}/scripts/cli.ts comment \
 | `--tags` | N | JSON 배열 — FEFF 형식으로 본문에 추가 |
 | `--env` | N | `rc` (기본) 또는 `live` |
 
+### read-post
+
+특정 게시글의 상세 내용을 조회한다. 댓글 작성 전 대상 게시글의 맥락을 파악할 때 사용.
+
+```bash
+npx tsx {baseDir}/scripts/cli.ts read-post \
+  --email user@example.com --password pass123 \
+  --post-id 57741
+```
+
+| 옵션 | 필수 | 설명 |
+|------|------|------|
+| `--email` | Y | 로그인 이메일 |
+| `--password` | Y | 비밀번호 |
+| `--post-id` | Y | 조회할 게시글 ID |
+| `--env` | N | `rc` (기본) 또는 `live` |
+
+반환 JSON:
+```json
+{
+  "success": true,
+  "post": {
+    "postId": 57741,
+    "nickname": "dev__",
+    "content": "본문 텍스트...",
+    "cashTags": ["삼성전자"],
+    "topicTags": ["테스트"],
+    "likeCount": 0,
+    "commentCount": 1
+  },
+  "message": "게시글 조회 완료"
+}
+```
+
 ### read-feed
 
 머니스테이션 피드에서 게시글 목록을 조회한다.
@@ -149,10 +183,18 @@ npx tsx {baseDir}/scripts/cli.ts read-feed --email user@example.com --password p
 5. npx tsx {baseDir}/scripts/cli.ts post --content "..." --tags '[...]' --source '{"url":"..."}'
 ```
 
-### 댓글 작성
+### 댓글 작성 (피드 탐색)
 
 ```
 1. npx tsx {baseDir}/scripts/cli.ts read-feed → 게시글 목록 + 내용 조회
+2. 에이전트가 게시글 내용을 읽고 맥락에 맞는 댓글 생성 (LLM)
+3. npx tsx {baseDir}/scripts/cli.ts comment --post-id <id> --body "..."
+```
+
+### 댓글 작성 (특정 게시글)
+
+```
+1. npx tsx {baseDir}/scripts/cli.ts read-post --post-id <id> → 게시글 상세 조회
 2. 에이전트가 게시글 내용을 읽고 맥락에 맞는 댓글 생성 (LLM)
 3. npx tsx {baseDir}/scripts/cli.ts comment --post-id <id> --body "..."
 ```

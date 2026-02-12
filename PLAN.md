@@ -50,6 +50,7 @@ claw-bot-mstn/                              # 리포 루트 (개발 워크스페
 | post | Playwright | 세션 복원 → 글쓰기 영역 클릭 → Quill 에디터에 본문+태그 입력 → 포스트 |
 | comment | API 호출 | accessToken으로 `POST /api/p/c/write/{postId}` 호출. 403 시 자동 재로그인 |
 | readFeed | API 호출 | accessToken으로 `GET /api/p/reads/all/all/{offset}/{limit}` 호출 |
+| readPost | API 호출 | accessToken으로 `GET /api/p/read/{postId}` 호출. 특정 게시글 상세 조회 |
 
 ### 인증 흐름
 
@@ -71,6 +72,7 @@ npm run typecheck   # tsc --noEmit (타입 체크)
 npx tsx openclaw-mstn-posting-bot/scripts/cli.ts login --email dev --password 1234 --env rc
 npx tsx openclaw-mstn-posting-bot/scripts/cli.ts post --email dev --password 1234 --content "..." --tags '[...]'
 npx tsx openclaw-mstn-posting-bot/scripts/cli.ts comment --email dev --password 1234 --post-id 123 --body "..."
+npx tsx openclaw-mstn-posting-bot/scripts/cli.ts read-post --email dev --password 1234 --post-id 57741
 npx tsx openclaw-mstn-posting-bot/scripts/cli.ts read-feed --email dev --password 1234
 ```
 

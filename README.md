@@ -64,6 +64,16 @@ npx tsx openclaw-mstn-posting-bot/scripts/cli.ts comment \
   --tags '[{"type":"cash","name":"현대건설"}]'
 ```
 
+### read-post
+
+```bash
+npx tsx openclaw-mstn-posting-bot/scripts/cli.ts read-post \
+  --email user@example.com --password pass123 \
+  --post-id 57741
+```
+
+특정 게시글의 상세 내용을 조회합니다. 댓글 작성 전 대상 게시글의 맥락을 파악할 때 사용합니다.
+
 ### read-feed
 
 ```bash

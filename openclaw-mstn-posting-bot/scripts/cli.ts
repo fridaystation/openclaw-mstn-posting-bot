@@ -6,13 +6,14 @@
  *   npx tsx scripts/cli.ts login   --email <email> --password <pw> [--env rc|live]
  *   npx tsx scripts/cli.ts post    --email <email> --password <pw> --content "..." [--tags '[...]'] [--source '{"url":"..."}'] [--env rc|live]
  *   npx tsx scripts/cli.ts comment --email <email> --password <pw> --post-id <id> --body "..." [--tags '[...]'] [--env rc|live]
+ *   npx tsx scripts/cli.ts read-post --email <email> --password <pw> --post-id <id> [--env rc|live]
  *   npx tsx scripts/cli.ts read-feed --email <email> --password <pw> [--offset 0] [--limit 20] [--env rc|live]
  */
 
 import { login } from "./login.js";
 import { post } from "./post.js";
 import { comment } from "./comment.js";
-import { readFeed } from "./feed.js";
+import { readFeed, readPost } from "./feed.js";
 import type { Tag } from "./post.js";
 import type { PostSource } from "./post.js";
 import type { Env } from "./lib/env.js";
@@ -57,7 +58,7 @@ async function main() {
   if (!command) {
     console.log(JSON.stringify({
       success: false,
-      message: "사용법: npx tsx scripts/cli.ts <login|post|comment|read-feed> [options]",
+      message: "사용법: npx tsx scripts/cli.ts <login|post|comment|read-post|read-feed> [options]",
     }));
     process.exit(1);
   }
@@ -104,6 +105,16 @@ async function main() {
           postId: Number(requireArg(args, "post-id")),
           body: requireArg(args, "body"),
           tags,
+          env,
+        });
+        break;
+      }
+
+      case "read-post": {
+        result = await readPost({
+          email: requireArg(args, "email"),
+          password: requireArg(args, "password"),
+          postId: Number(requireArg(args, "post-id")),
           env,
         });
         break;

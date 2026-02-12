@@ -154,6 +154,8 @@ interface CommentResult { success: boolean; message: string; }
 // feed.ts
 interface ReadFeedParams  { email: string; password: string; offset?: number; limit?: number; env?: Env; }
 interface ReadFeedResult  { success: boolean; posts: FeedPost[]; message: string; }
+interface ReadPostParams  { email: string; password: string; postId: number; env?: Env; }
+interface ReadPostResult  { success: boolean; post: FeedPost | null; message: string; }
 interface FeedPost {
   postId: number; userId: number; nickname: string; username: string;
   content: string; cashTags: string[]; topicTags: string[];
@@ -175,7 +177,7 @@ interface FeedPost {
 | `login.ts` | `login()`, `ensureSession()` | Playwright 폼 로그인 → JWT에서 userId 추출 → 세션 저장 |
 | `post.ts` | `post()`, `Tag`, `PostSource` | 중복 체크 → `buildBody()`로 본문+출처 구성 → Playwright 태그 자동완성 삽입 |
 | `comment.ts` | `comment()` | 중복 체크 → fetch API로 댓글 작성, 태그는 FEFF 형식, 403 시 재로그인 후 재시도 |
-| `feed.ts` | `readFeed()`, `FeedPost` | fetch API로 피드 조회 — 게시글 내용·태그·작성자 등 구조화 반환 |
+| `feed.ts` | `readFeed()`, `readPost()`, `FeedPost` | fetch API로 피드/게시글 상세 조회 — 게시글 내용·태그·작성자 등 구조화 반환 |
 | `index.ts` | 모든 스킬 + 타입 re-export | `login`, `post`, `comment`, `readFeed` 함수 + `Tag`, `FeedPost`, `Env` 등 타입 |
 | `cli.ts` | CLI 엔트리포인트 | `process.argv` 파싱 → 해당 함수 호출 → JSON stdout 출력 |
 
